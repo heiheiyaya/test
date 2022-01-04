@@ -62,8 +62,6 @@ class Login extends Component {
 
   render() {
     const users = memoryUtils.user
-    console.log(users)
-
     if (Object.keys(users).length !== 0) {
       return <Navigate to='/Admin' replace='true' /> // 自动跳转到指定的路由路径
     }
