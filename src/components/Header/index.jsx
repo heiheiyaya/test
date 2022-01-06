@@ -57,7 +57,7 @@ export default class Header extends Component {
         return title
     }
 
-    UNSAFE_componentDidMount() {
+    componentDidMount() {
         // 启动循环定时器
         this.intervalId = setInterval(() => {
             // 将currentTime更新为当前时间值
@@ -67,7 +67,7 @@ export default class Header extends Component {
         }, 1000);
 
     }
-    UNSAFE_componentWillUnmount() {
+    componentWillUnmount() {
         // 清除定时器
         clearInterval(this.intervalId)
     }
