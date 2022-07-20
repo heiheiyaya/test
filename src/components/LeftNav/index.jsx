@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Menu, Icon } from 'antd';
 import logo from '../../pages/Login/images/logo.png'
 import './index.less'
+import memoryUtils from '../../utils/memoryUtils';
 
 import menuList from '../../config/menuConfig'
 
@@ -13,11 +14,63 @@ export default class LeftNav extends Component {
         collapsed: false,
     };
 
+    hasAuth = (item) => {
+
+        const key = item.key
+        const menuSet = this.menuSet
+        /*
+        1. 如果菜单项标识为公开
+        2. 如果当前用户是admin
+        3. 如果菜单项的key在用户的menus中
+         */
+        if (item.Public || memoryUtils.user.data.username === 'admin' || menuSet.has(key)) {
+            return true
+            // 4. 如果有子节点, 需要判断有没有一个child的key在menus中
+        } else if (item.children) {
+            return !!item.children.find(child => menuSet.has(child.key))
+        }
+    }
+
     toggleCollapsed = () => {
         this.setState({
             collapsed: !this.state.collapsed,
         });
     };
+    getMenuNodes2 = (list) => {
+
+        // 得到当前请求的path
+        const path = window.location.pathname
+
+        return list.reduce((pre, item) => {
+
+            if (this.hasAuth(item)) {
+                if (!item.children) {
+                    pre.push((
+                        <Menu.Item key={item.key}>
+                            <Link to={item.key}>
+                                <Icon type={item.icon} />
+                                <span>{item.title}</span>
+                            </Link>
+                        </Menu.Item>
+                    ))
+                } else {
+                    pre.push((
+                        <SubMenu key={item.key} title={<span><Icon type={item.icon} /><span>{item.title}</span></span>}>
+                            {
+                                this.getMenuNodes(item.children)
+                            }
+                        </SubMenu>
+                    ))
+
+                    if (item.children.find(cItem => path.indexOf(cItem.key) === 0)) {
+                        this.openKey = item.key
+                    }
+                }
+            }
+            return pre
+        }, [])
+
+    }
     getMenuNodes = (menuList) => {
 
         const path = window.location.pathname
@@ -54,7 +107,8 @@ export default class LeftNav extends Component {
         })
     };
     UNSAFE_componentWillMount() {
-        this.menuNodes = this.getMenuNodes(menuList)
+        this.menuSet = new Set(memoryUtils.user.data.role.menus || [])
+        this.menuNodes = this.getMenuNodes2(menuList)
     }
 
     render() {
@@ -67,6 +121,9 @@ export default class LeftNav extends Component {
         //     //...
         // };
         let selectKey = window.location.pathname;
+        if (selectKey.indexOf('/product') === 0) {
+            selectKey = '/product'
+        }
 
 
         return (

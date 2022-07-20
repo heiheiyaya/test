@@ -2,19 +2,19 @@ import React, { Component } from 'react'
 import { Modal } from 'antd'
 import { Navigate } from 'react-router-dom'
 
+import { reqWether } from '../../api/index'
 import { formateDate } from '../../utils/dateUtils'
 import menuList from '../../config/menuConfig'
 import memoryUtils from '../../utils/memoryUtils'
 import storageUtils from '../../utils/storageUtils'
+
 import './index.less'
-
-
 
 
 export default class Header extends Component {
     state = {
         currentTime: formateDate(Date.now()),
-
+        weather: '',
 
     }
     logout = () => {
@@ -24,7 +24,6 @@ export default class Header extends Component {
             okText: '确认',
             cancelText: '取消',
             onOk: () => {
-
                 // 确定后, 删除存储的用户信息
                 // local中的
                 storageUtils.removeUser()
@@ -35,6 +34,13 @@ export default class Header extends Component {
             onCancel() {
 
             },
+        })
+
+    }
+    getWeather = async () => {
+        const { weather } = await reqWether('重庆')
+        this.setState({
+            weather
         })
 
     }
@@ -52,19 +58,19 @@ export default class Header extends Component {
             }
 
         })
-
-
         return title
     }
 
     componentDidMount() {
         // 启动循环定时器
+        this.getWeather();
         this.intervalId = setInterval(() => {
             // 将currentTime更新为当前时间值
             this.setState({
                 currentTime: formateDate(Date.now())
             })
         }, 1000);
+
 
     }
     componentWillUnmount() {
@@ -91,8 +97,8 @@ export default class Header extends Component {
                     <div className="header-bottom-left">{title}</div>
                     <div className="header-bottom-right">
                         <span>{this.state.currentTime}</span>
-                        <img src="" alt="weather" />
-                        <span>晴</span>
+
+                        <span>{this.state.weather}</span>
                     </div>
                 </div>
             </div>

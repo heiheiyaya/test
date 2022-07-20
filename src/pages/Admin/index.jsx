@@ -26,7 +26,7 @@ export default class Admin extends Component {
                             <Route path="/home" element={<Home />}></Route>
                             <Route path="/user" element={<User />}></Route>
                             <Route path="/role" element={<Role />}></Route>
-                            <Route path="/product" element={<Product />}></Route>
+                            <Route path="/product/*" element={<Product />}></Route>
                             <Route path="/chart" element={<Chart />}></Route>
                             <Route path="/category" element={<Categroy />}></Route>
                             <Route path="/*" element={<Navigate to="/Admin/home" />} />

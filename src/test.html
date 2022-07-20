@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<script>
+    // var x = 10;
+    // var obj = {
+    //     x: 20,
+    //     f: function () {
+    //         console.log(this.x)
+    //         var foo = function () {
+    //             console.log(this.x);
+    //         }
+    //         foo();
+    //     }
+
+    // };
+    // obj.f();
+    // class Animal {
+    //     static changeAnimal(newAnimal) {
+    //         this.newAnimal = newAnimal
+    //         return this.newAnimal
+    //     }
+    //     constructor({ newAnimal = 'cat' } = {}) {
+    //         this.newAnimal = newAnimal
+    //     }
+    // }
+    // const animal = new Animal({ newAnimal: 'dog' })
+    // animal.changeAnimal('bird')
+
+    // function foo() {
+    //     var a = 1;
+    //     var b = 2;
+    //     {
+    //         let b = 3;
+    //         var c = 4;
+    //         let d = 5;
+    //         console.log(a)
+    //         console.log(b)
+    //     }
+    //     console.log(b)
+    //     console.log(c)
+    //     console.log(d)
+    // }
+    // foo()
+    // function runStack(n) {
+    //     if (n === 0) return 100;
+
+    //     return arguments.callee(n - 2);
+
+    // }
+    // runStack(50000);
+    // function runStack(n) {
+    //     if (n === 0) return 100;
+    //     return runStack.bind(null, n - 2);
+    //     // 返回自身的一个版本}
+    //     // 蹦床函数，避免递归
+    //     function trampoline(f) {
+    //         while (f && f instanceof Function) { f = f(); }
+    //         return f;
+    //     }
+    //     trampoline(runStack(1000000))
+
+    // var func1 = {
+    //     name: "a",
+    //     test: function () {
+    //         alert(this.name);
+    //     }
+    // }
+    // name = "global";
+    // func1.test();
+    // func = func1.test();
+    // func;
+    // function func2() {
+    //     var name = "func2";
+    //     func();
+    // }
+    // func2();
+    var ctx = { _val: 30 };
+    var _val = 10;
+    function rootFn() {
+        console.log(this._val);
+        function childFn() {
+            this._val = 20;
+            console.log(this._val);
+        }
+        return childFn;
+    }
+    rootFn.apply(ctx)();
+    console.log(ctx._val);
+
+</script>
+
+<body>
+    <div class="box1">
+        <div class="box"></div>
+    </div>
+
+</body>
+
+</html>
