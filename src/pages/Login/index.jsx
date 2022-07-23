@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Form, Icon, Input, Button } from 'antd'
-import { Relogin } from '../../api'
+//import { Relogin } from '../../api'
 import { message } from 'antd'
-import memoryUtils from '../../utils/memoryUtils'
-import storageUtils from '../../utils/storageUtils'
+import { connect } from 'react-redux'
+import { login } from '../../redux/actions'
+// import memoryUtils from '../../utils/memoryUtils'
+// import storageUtils from '../../utils/storageUtils'
 
 
 import logo from './images/logo.png'
@@ -21,18 +23,20 @@ class Login extends Component {
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
                 const { username, password } = values;
-                const reponse = await Relogin(username, password)
-                const user = reponse.data
-                if (user.status === 0) {
-                    message.success('登陆成功，欢迎' + user.data.username)
-                    this.setState({ user: user.data.username })
-                    storageUtils.saveUser(user)
-                    // 保存到内存中
-                    memoryUtils.user = user
+                // const reponse = await Relogin(username, password)
+                // const user = reponse.data
+                // if (user.status === 0) {
+                //     message.success('登陆成功，欢迎' + user.data.username)
+                //     this.setState({ user: user.data.username })
+                //     // storageUtils.saveUser(user)
+                //     // // 保存到内存中
+                //     // memoryUtils.user = user
 
-                } else { // 登陆失败
-                    message.error(user.msg)
-                }
+                // } else { // 登陆失败
+                //     message.error(user.msg)
+                // }
+                this.props.login(username, password)
+                this.setState({ user: this.props.user.username })
             } else {
                 console.log('检验失败！')
             }
@@ -59,7 +63,7 @@ class Login extends Component {
 
     render() {
 
-        const users = memoryUtils.user
+        const users = this.props.user
         if (Object.keys(users).length !== 0) {
             return <Navigate to='/Admin' replace='true' /> // 自动跳转到指定的路由路径
         }
@@ -116,4 +120,7 @@ class Login extends Component {
     }
 }
 const WrappedLogin = Form.create()(Login);
-export default WrappedLogin;
+export default connect(
+    state => ({ user: state.user }),
+    { login }
+)(WrappedLogin);

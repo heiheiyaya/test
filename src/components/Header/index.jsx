@@ -1,17 +1,20 @@
 import React, { Component } from 'react'
 import { Modal } from 'antd'
 import { Navigate } from 'react-router-dom'
-
+import { connect } from 'react-redux'
 import { reqWether } from '../../api/index'
 import { formateDate } from '../../utils/dateUtils'
 import menuList from '../../config/menuConfig'
-import memoryUtils from '../../utils/memoryUtils'
-import storageUtils from '../../utils/storageUtils'
+// import memoryUtils from '../../utils/memoryUtils'
+// import storageUtils from '../../utils/storageUtils'
+import { logUser } from '../../redux/actions'
+
 
 import './index.less'
 
 
-export default class Header extends Component {
+
+class Header extends Component {
     state = {
         currentTime: formateDate(Date.now()),
         weather: '',
@@ -26,10 +29,11 @@ export default class Header extends Component {
             onOk: () => {
                 // 确定后, 删除存储的用户信息
                 // local中的
-                storageUtils.removeUser()
-                // 内存中的
-                memoryUtils.user = {}
-                // 跳转到登陆界面
+                // storageUtils.removeUser()
+                // // 内存中的
+                // memoryUtils.user = {}
+                // // 跳转到登陆界面
+                this.props.logUser()
             },
             onCancel() {
 
@@ -78,11 +82,12 @@ export default class Header extends Component {
         clearInterval(this.intervalId)
     }
     render() {
-        const user = memoryUtils.user
+
         // 得到当前需要显示的title
-        const title = this.getTitle()
+        //const title = this.getTitle()
+        const title = this.props.headTitle
         // 退出后自动跳转到指定的登录页面
-        const users = memoryUtils.user
+        const users = this.props.user
         if (Object.keys(users).length === 0) {
             return <Navigate to='/' replace='true' />
         }
@@ -90,7 +95,7 @@ export default class Header extends Component {
         return (
             <div className="header">
                 <div className="header-top">
-                    欢迎, {user.data.username} &nbsp;&nbsp;
+                    欢迎, {users.username} &nbsp;&nbsp;
                     <a onClick={this.logout}>退出</a>
                 </div>
                 <div className="header-bottom">
@@ -105,3 +110,8 @@ export default class Header extends Component {
         )
     }
 }
+
+export default connect(
+    state => ({ headTitle: state.headTitle, user: state.user }),
+    { logUser }
+)(Header)

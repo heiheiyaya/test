@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom'
 import { Menu, Icon } from 'antd';
 import logo from '../../pages/Login/images/logo.png'
 import './index.less'
-import memoryUtils from '../../utils/memoryUtils';
-
+// import memoryUtils from '../../utils/memoryUtils';
 import menuList from '../../config/menuConfig'
+//redux
+import { connect } from 'react-redux'
+import { setHeadTitle } from '../../redux/actions'
 
 
 const { SubMenu } = Menu;
-export default class LeftNav extends Component {
+class LeftNav extends Component {
     state = {
         collapsed: false,
     };
@@ -23,7 +25,8 @@ export default class LeftNav extends Component {
         2. 如果当前用户是admin
         3. 如果菜单项的key在用户的menus中
          */
-        if (item.Public || memoryUtils.user.data.username === 'admin' || menuSet.has(key)) {
+        console.log()
+        if (item.Public || this.props.user.username === 'admin' || menuSet.has(key)) {
             return true
             // 4. 如果有子节点, 需要判断有没有一个child的key在menus中
         } else if (item.children) {
@@ -45,9 +48,13 @@ export default class LeftNav extends Component {
 
             if (this.hasAuth(item)) {
                 if (!item.children) {
+                    if (item.key === path || path.indexOf(item.key) === 0) {
+                        this.props.setHeadTitle(item.title)
+                    }
+
                     pre.push((
                         <Menu.Item key={item.key}>
-                            <Link to={item.key}>
+                            <Link to={item.key} onClick={() => { this.props.setHeadTitle(item.title) }}>
                                 <Icon type={item.icon} />
                                 <span>{item.title}</span>
                             </Link>
@@ -78,7 +85,7 @@ export default class LeftNav extends Component {
             if (!item.children) {
                 return (
                     <Menu.Item key={item.key}>
-                        <Link to={item.key}>
+                        <Link to={item.key} onClick={() => { this.props.setHeadTitle(item.title) }}>
                             <Icon type={item.icon} />
                             <span>{item.title}</span>
                         </Link>
@@ -107,7 +114,7 @@ export default class LeftNav extends Component {
         })
     };
     UNSAFE_componentWillMount() {
-        this.menuSet = new Set(memoryUtils.user.data.role.menus || [])
+        this.menuSet = new Set(this.props.user.role.menus || [])
         this.menuNodes = this.getMenuNodes2(menuList)
     }
 
@@ -148,3 +155,8 @@ export default class LeftNav extends Component {
         )
     }
 }
+
+export default connect(
+    state => ({ user: state.user }),
+    { setHeadTitle }
+)(LeftNav)

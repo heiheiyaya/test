@@ -12,13 +12,14 @@ import { PAGE_SIZE } from "../../utils/constant"
 import AddForm from './add-form'
 import AuthForm from './auth-form'
 import { formateDate } from '../../utils/dateUtils'
-import memoryUtils from '../../utils/memoryUtils'
+// import memoryUtils from '../../utils/memoryUtils'
+import { connect } from 'react-redux'
 import { reqAddRole, reqUpdateRole, reqRoles } from '../../api'
 
 /*
 角色路由
  */
-export default class Role extends PureComponent {
+class Role extends PureComponent {
 
     state = {
         roles: [], // 所有角色的列表
@@ -128,7 +129,7 @@ export default class Role extends PureComponent {
         // 更新role对象相关属性
         role.menus = this.authRef.current.getMenus()
         role.auth_time = Date.now()
-        role.auth_name = memoryUtils.user.username
+        role.auth_name = this.props.user.username
         // 请求更新角色
         const result = await reqUpdateRole(role)
         if (result.data.status === 0) {
@@ -195,3 +196,7 @@ export default class Role extends PureComponent {
         )
     }
 }
+export default connect(
+    state => ({ state: state.user }),
+    {}
+)(Role)
